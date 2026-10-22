@@ -1,0 +1,60 @@
+
+# 1. Import dataset
+import pandas as pd
+
+df = pd.read_csv("RealEstate_Prices.csv")
+print(df.head())
+
+
+# 2. Clean column names
+df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
+print(df.columns)
+
+
+# 3. Handle missing values
+df = df.dropna()
+print("Missing values removed")
+
+
+# 4. Merge another dataset (optional)
+# df2 = pd.read_csv("Neighborhood.csv")
+# df = pd.merge(df, df2, on="neighborhood")
+# Run these lines only if you have the second dataset
+
+
+# 5. Filter data
+# Example: houses with sale price above 100000
+# Change sale_price if your column name is different
+
+if "sale_price" in df.columns:
+    print(df[df["sale_price"] > 100000])
+
+
+# 6. Encode categorical data
+df = pd.get_dummies(df, dtype=int)
+print(df.head())
+
+
+# 7. Find average price by neighborhood
+# Run this if these columns exist in your dataset
+
+if "sale_price" in df.columns and "neighborhood" in df.columns:
+    print(df.groupby("neighborhood")["sale_price"].mean())
+
+
+# 8. Remove outliers using the IQR method
+if "sale_price" in df.columns:
+    q1 = df["sale_price"].quantile(0.25)
+    q3 = df["sale_price"].quantile(0.75)
+    iqr = q3 - q1
+
+    df = df[
+        (df["sale_price"] >= q1 - 1.5 * iqr) &
+        (df["sale_price"] <= q3 + 1.5 * iqr)
+    ]
+
+
+# Save cleaned data
+df.to_csv("Cleaned_RealEstate.csv", index=False)
+
+print("Data wrangling completed!")
