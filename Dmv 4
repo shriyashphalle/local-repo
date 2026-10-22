@@ -1,0 +1,145 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "de1531c6",
+   "metadata": {},
+   "source": [
+    "# Data Wrangling on Real Estate Market\n",
+    "\n",
+    "**Dataset required:** `RealEstate_Prices.csv`\n",
+    "\n",
+    "Place the CSV file in the same folder as this notebook, then run the cells in order."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ae8e88e0",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import pandas as pd\n",
+    "import numpy as np"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "6c68eea9",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# 1. Import dataset and clean column names\n",
+    "df = pd.read_csv(\"RealEstate_Prices.csv\")\n",
+    "df.columns = df.columns.str.strip().str.lower().str.replace(\" \", \"_\")\n",
+    "print(df.head())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "1bbae1aa",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# 2. Handle missing values\n",
+    "df = df.dropna()\n",
+    "print(\"Missing values handled\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "12994c62",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# 3. Merge datasets (optional)\n",
+    "# Use this only if a second dataset is available\n",
+    "# df2 = pd.read_csv(\"Neighborhood_Info.csv\")\n",
+    "# df = pd.merge(df, df2, on=\"neighborhood\", how=\"left\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "f53c09b6",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# 4. Filter data\n",
+    "df = df.head(100)\n",
+    "print(df.head())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ef691c07",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# 5. Encode categorical variables\n",
+    "df = pd.get_dummies(df, drop_first=True, dtype=int)\n",
+    "print(df.head())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "5e93c8b3",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# 6. Summary statistics\n",
+    "print(df.describe())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8caf2557",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# 7. Handle outliers using IQR (numerical columns)\n",
+    "for col in df.select_dtypes(include=np.number).columns:\n",
+    "    Q1 = df[col].quantile(0.25)\n",
+    "    Q3 = df[col].quantile(0.75)\n",
+    "    IQR = Q3 - Q1\n",
+    "\n",
+    "    df = df[(df[col] >= Q1 - 1.5 * IQR) &\n",
+    "            (df[col] <= Q3 + 1.5 * IQR)]\n",
+    "\n",
+    "print(\"Final cleaned data:\")\n",
+    "print(df.head())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "b3a587ce",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Save cleaned dataset\n",
+    "df.to_csv(\"Cleaned_RealEstate_Prices.csv\", index=False)\n",
+    "print(\"Dataset saved successfully!\")"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "name": "python",
+   "version": "3.x"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
